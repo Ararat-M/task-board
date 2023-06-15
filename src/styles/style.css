@@ -1,3 +1,79 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 #app-login-btn {
   width: 160px;
+}
+
+.main {
+  padding: 20px 19px 0px;
+  flex-grow: 1;
+  background-color: #0079BF;
+}
+
+.kanban {
+  display: flex;
+  justify-content: center;
+}
+
+.kanban__content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  column-gap: 24px;
+  max-width: 1770px;
+}
+
+.task-list {
+  width: 100%;
+  height: fit-content;
+  padding: 20px 19px 8px;
+  background-color: #EBECF0;
+  border-radius: 10px;
+}
+
+.task-item {
+  width: 100%;
+  padding: 7px 8px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  color: #000000;
+}
+
+.task-item:not(:last-child) {
+  margin-bottom: 15px;
+}
+
+.task-list__title {
+  display: block;
+  margin-bottom: 15px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  color: #000000;
+}
+
+footer {
+  
 }
