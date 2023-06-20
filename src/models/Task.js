@@ -2,9 +2,10 @@ import { BaseModel } from "./BaseModel";
 import { addToStorage } from "../utils";
 
 export class Task extends BaseModel {
-  constructor(title, user_id) {
+  constructor(title, state, user_id) {
     super();
-    this.title = title; 
+    this.title = title;
+    this.state = state;
     this.user_id = user_id;
     this.storageKey = "tasks";
   }

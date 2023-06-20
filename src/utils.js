@@ -8,8 +8,18 @@ export const addToStorage = function (obj, key) {
   localStorage.setItem(key, JSON.stringify(storageData));
 };
 
-export const generateTestUser = function (User) {
-  localStorage.clear();
-  const testUser = new User("test", "qwerty123");
-  User.save(testUser);
-};
+export const filteredUserTaskList = function (user) {
+  const taskList = getFromStorage("tasks");
+
+  const taskListReady = taskList.filter(item => {
+    return item.user_id == currentUser.id && item.state == "ready"
+  });
+  const taskListInProgress = taskList.filter(item => {
+    return item.user_id == currentUser.id && item.state == "in-progress"
+  });
+  const taskListFinished = taskList.filter(item => {
+    return item.user_id == currentUser.id && item.state == "finished"
+  });
+  
+  return { taskListReady, taskListInProgress, taskListFinished }
+}
