@@ -1,22 +1,28 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/style.css";
+import "./styles/addUser.css";
+import "./styles/profile.css";
 import kanbanMain from "./templates/kanbanMain.html";
 import kanbanFooter from "./templates/kanbanFooter.html";
 import noAccess from "./templates/noAccess.html";
 import authForm from "./templates/authForm.html"
 import userInfo from "./templates/userInfo.html"
-import addUserMain from "./templates/addUserMain.html"
+import userCard from "./templates/userCard.html"
 import addUserFooter from "./templates/addUserFooter.html"
 import adminDropdown from "./templates/adminDropdown.html"
 import userDropdown from "./templates/userDropdown.html"
+import profile from "./templates/profile.html"
 import { State } from "./state";
 import { authUser } from "./services/auth";
 import { Task } from "./models/Task";
+import { getFromStorage } from "./utils";
+import { filteredUserTaskList } from "./utils";
+
 
 export const appState = new State();
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadPageContent("auth");
+  loadPageContent("addUser");
 })
 
 const contentUserPanelElement = document.querySelector(".user-panel");
@@ -59,16 +65,55 @@ function loadPageContent(page) {
       loadPageContent(page);
     })
   }
-
+  
   // Загружаем контент админ панели
   if (page === "main") {
     contentMainElement.innerHTML = kanbanMain;
     contentFooterElement.innerHTML = kanbanFooter;
   }
-
+  
   if (page === "addUser") {
-    contentMainElement.innerHTML = addUserMain;
+    const containerUsers = document.createElement('div');
+    containerUsers.classList.add("user-container");
+    
+    contentMainElement.appendChild(containerUsers);
+    
+    const users = getFromStorage("users").filter((item) => !item.hasAdmin);
+    
+    users.reverse().forEach((item, index) => {
+      containerUsers.innerHTML += userCard;
+      
+      const login = document.querySelectorAll(".user-content__info")[index];
+      const taskCounterReady = document.querySelectorAll(".task-counter-list__item-ready")[index];
+      const taskCounterInProgress = document.querySelectorAll(".task-counter-list__item-in-progress")[index];
+      const taskCounterFinished = document.querySelectorAll(".task-counter-list__item-finished")[index];
+      
+      const tasks = filteredUserTaskList(item);
+      
+      login.textContent = item.login;
+      taskCounterReady.textContent = `Ready: ${tasks.taskListReady.length}`;
+      taskCounterInProgress.textContent = `In Progress: ${tasks.taskListInProgress.length}`;
+      taskCounterFinished.textContent = `Finished: ${tasks.taskListFinished.length}`;
+    });
+    
     contentFooterElement.innerHTML = addUserFooter;
+
+    document.querySelector(".active-user__counter").textContent = users.length;
+  }
+  
+  if (page === "profile") {
+    contentMainElement.innerHTML = profile;
+
+    const profileIdArea = document.querySelector(".profile__info-id");
+    const profileLoginArea = document.querySelector(".profile__info-login");
+    const profileRoleArea = document.querySelector(".profile__info-role");
+
+    profileIdArea.textContent = `id: ${appState.currentUser.id}`;
+    profileLoginArea.textContent = `Login: ${appState.currentUser.login}`;
+
+    appState.currentUser.hasAdmin 
+      ? profileRoleArea.textContent = "Role: admin"
+      : profileRoleArea.textContent = "Role: user";
   }
 }
 
@@ -89,8 +134,7 @@ function LoadUserPanel() {
   document.querySelectorAll(".dropdown__link").forEach((item) => {
     item.addEventListener("click", (e) => {
       e.preventDefault();
-      
-      console.log(e.currentTarget.dataset.content);
+
       loadPageContent(e.currentTarget.dataset.content);
     })
   })
@@ -98,7 +142,7 @@ function LoadUserPanel() {
   LogOut.addEventListener("click", (e) => {
     appState.currentUser = null;
     appState.auth = false;
-    
+
     loadPageContent("auth");
   })
 }

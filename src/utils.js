@@ -12,13 +12,13 @@ export const filteredUserTaskList = function (user) {
   const taskList = getFromStorage("tasks");
 
   const taskListReady = taskList.filter(item => {
-    return item.user_id == currentUser.id && item.state == "ready"
+    return item.user_id == user.id && item.state == "ready"
   });
   const taskListInProgress = taskList.filter(item => {
-    return item.user_id == currentUser.id && item.state == "in-progress"
+    return item.user_id == user.id && item.state == "in-progress"
   });
   const taskListFinished = taskList.filter(item => {
-    return item.user_id == currentUser.id && item.state == "finished"
+    return item.user_id == user.id && item.state == "finished"
   });
   
   return { taskListReady, taskListInProgress, taskListFinished }
