@@ -19,8 +19,11 @@ ul {
   list-style: none;
 }
 
+a:active,
+a:hover,  
 a {
   text-decoration: none;
+  color: #000000;
 }
 
 button {
@@ -187,10 +190,10 @@ button {
   display: block;
 }
 
-.dropdown__list-item {
+.dropdown__link {
+  display: block;
   padding: 10px 0px;
   white-space: nowrap;
-  color: #000000;
   cursor: pointer;
 }
 
