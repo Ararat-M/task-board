@@ -11,9 +11,11 @@ import userCard from "./templates/userCard.html"
 import addUserFooter from "./templates/addUserFooter.html"
 import adminDropdown from "./templates/adminDropdown.html"
 import userDropdown from "./templates/userDropdown.html"
+import addUserForm from "./templates/addUserForm.html"
 import profile from "./templates/profile.html"
 import { State } from "./state";
 import { authUser } from "./services/auth";
+import { createUser } from "./services/createUser";
 import { Task } from "./models/Task";
 import { getFromStorage } from "./utils";
 import { filteredUserTaskList } from "./utils";
@@ -22,6 +24,9 @@ import { filteredUserTaskList } from "./utils";
 export const appState = new State();
 
 document.addEventListener("DOMContentLoaded", () => {
+  const login = "admin";
+  const password = "admin123";
+  authUser(login, password)
   loadPageContent("addUser");
 })
 
@@ -39,7 +44,7 @@ function loadPageContent(page) {
   // User panel загрузиться только при appState.auth == true
   LoadUserPanel()
   
-  // Загружаем контент главной страницы
+  // Загружаем контент страницы авторизации
   if (page === "auth") {
     contentUserPanelElement.innerHTML = authForm;
     contentMainElement.innerHTML = "<h2>Log In</h2>";
@@ -66,19 +71,21 @@ function loadPageContent(page) {
     })
   }
   
-  // Загружаем контент админ панели
+  // task board
   if (page === "main") {
     contentMainElement.innerHTML = kanbanMain;
     contentFooterElement.innerHTML = kanbanFooter;
   }
-  
+
+  // add user
   if (page === "addUser") {
     const containerUsers = document.createElement('div');
     containerUsers.classList.add("user-container");
-    
+    containerUsers.innerHTML = addUserForm;
+
     contentMainElement.appendChild(containerUsers);
     
-    const users = getFromStorage("users").filter((item) => !item.hasAdmin);
+    const users = getFromStorage("users")
     
     users.reverse().forEach((item, index) => {
       containerUsers.innerHTML += userCard;
@@ -99,8 +106,20 @@ function loadPageContent(page) {
     contentFooterElement.innerHTML = addUserFooter;
 
     document.querySelector(".active-user__counter").textContent = users.length;
+    
+    const CreateUserForm = document.querySelector(".add-user-form");
+    CreateUserForm.addEventListener("submit", () => {
+
+      const formData = new FormData(CreateUserForm)
+      const login = formData.get("new-user-login");
+      const password = formData.get("new-user-password");
+
+      createUser(login, password);
+      loadPageContent("addUser")
+    })
   }
-  
+
+  // Profile
   if (page === "profile") {
     contentMainElement.innerHTML = profile;
 

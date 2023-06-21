@@ -1,4 +1,61 @@
-.add-user {
+.user-container {
   display: flex;
-  flex-direction: row;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 1770px;
+  margin: 0 auto;
+  padding: 20px 20px;
+}
+
+.user-content {
+  max-width: 200px;
+  flex-shrink: 0;
+  flex-grow: 1;
+  padding: 20px;
+  border: 2px solid #0067A3;
+  border-radius: 5px;
+  background-color: #EBECF0;
+}
+
+.add-user-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}
+
+.add-user-btn {
+  margin-top: auto;
+  border-color: #0079BF;
+  color: #0079BF;
+}
+
+.add-user-btn:hover {
+  background-color: #0079BF;
+  border-color: #0079BF;
+  color: #EBECF0;
+}
+
+.user-content__info {
+  display: block;
+  margin-bottom: 12px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 21px;
+  color: rgb(1, 87, 87);
+}
+
+.task-counter-list {
+  display: flex;
+  flex-direction: column;
+  margin-left: 4px;
+  row-gap: 12px;
+}
+
+.task-counter-list__item {
+  padding: 4px 12px;
+  background-color: white;
+  border-radius: 5px;
 }
