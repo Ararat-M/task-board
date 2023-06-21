@@ -6,7 +6,7 @@ export class Task extends BaseModel {
     super();
     this.title = title;
     this.state = state;
-    this.user_id = user_id;
+    this.executor_id = user_id;
     this.storageKey = "tasks";
   }
 
