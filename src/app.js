@@ -143,43 +143,40 @@ function loadPageContent(page) {
         form.classList.toggle("task-content__form_disabled");
         item.classList.toggle("task-content__btn-add_disabled");
       })
+      
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-      if (state == "ready") {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-  
+        if (state == "ready") {
           const formData = new FormData(form);
           const taksTitle = formData.get("Task title");
   
           const user_id = userListSelect.options[userListSelect.selectedIndex].value;
           
           createTask(taksTitle, state, user_id);
-  
-          form.classList.toggle("task-content__form_disabled");
-          item.classList.toggle("task-content__btn-add_disabled");
-  
-          updateAllTaskList(readyList, inProgressList, finishedList);
-        })
-      } else {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
+        }
 
-          if (state == "in-progress") {
-            changeTaskState(taskReadyListSelect.options[taskReadyListSelect.selectedIndex].value, state)
-            taskReadyListSelect.removeChild(taskReadyListSelect.options[taskReadyListSelect.selectedIndex])
-          }
-          
-          if (state == "finished") {
-            changeTaskState(taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex].value, state)
-            taskInProgressListSelect.removeChild(taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex])
-          }
-  
-          form.classList.toggle("task-content__form_disabled");
-          item.classList.toggle("task-content__btn-add_disabled");
-  
-          updateAllTaskList(readyList, inProgressList, finishedList);
-        })
-      }
+        if (state == "in-progress" && taskReadyListSelect.options.length > 0) {
+          const currentOption = taskReadyListSelect.options[taskReadyListSelect.selectedIndex];
+
+          changeTaskState(currentOption.value, state);
+
+          taskInProgressListSelect.appendChild(currentOption);
+        }
+
+        if (state == "finished" && taskInProgressListSelect.options.length > 0) {
+          const currentOption = taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex];
+
+          changeTaskState(currentOption.value, state);
+
+          taskInProgressListSelect.removeChild(currentOption);
+        }
+
+        form.classList.toggle("task-content__form_disabled");
+        item.classList.toggle("task-content__btn-add_disabled");
+
+        updateAllTaskList(readyList, inProgressList, finishedList);
+      })
     })
   }
 
