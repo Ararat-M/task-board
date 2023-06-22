@@ -18,10 +18,11 @@ import { State } from "./state";
 import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
 import { createTask } from "./services/createTask";
-import { updateTaskList } from "./services/updateTaskList";
+import { updateAllTaskList } from "./services/updateAllTaskList";
 import { getFromStorage } from "./utils";
 import { filteredUserTaskList } from "./utils";
 import { Admin } from "./models/Admin"
+import { changeTaskState } from "./services/changeTaskState";
 
 
 export const appState = new State();
@@ -30,8 +31,8 @@ export const appState = new State();
 // Admin.save(admin);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const login = "alex";
-  const password = "alex123";
+  const login = "elena";
+  const password = "elena123";
   authUser(login, password)
   loadPageContent("main");
 })
@@ -95,19 +96,43 @@ function loadPageContent(page) {
       })
     }
 
-    updateTaskList(readyList, inProgressList, finishedList);
+    updateAllTaskList(readyList, inProgressList, finishedList);
     
     const users = getFromStorage("users").filter((item) => !item.hasAdmin)
 
     const userListSelect = document.querySelector("#user-list");
-
+    
     users.forEach((item) => {
       const user = document.createElement("option");
-
+      
       user.textContent = item.login;
       user.value = item.id;
-
+      
       userListSelect.appendChild(user)
+    })
+    
+    const tasks = getFromStorage("tasks");
+
+    const taskReadyListSelect = document.querySelector("#task-ready-list-select")
+    const taskInProgressListSelect = document.querySelector("#task-in-progress-list-select")
+
+    tasks.forEach((item) => {
+      if (item.executor_id == appState.currentUser.id) {
+        if (item.state == "ready") {
+          const task = document.createElement("option");
+          task.textContent = item.title;
+          task.value = item.id;
+  
+          taskReadyListSelect.appendChild(task)
+        }
+  
+        if (item.state == "in-progress") {
+          const task = document.createElement("option");
+          task.textContent = item.title;
+          task.value = item.id;
+          taskInProgressListSelect.appendChild(task)
+        }
+      }
     })
 
     addBtnList.forEach((item, index) => {
@@ -119,21 +144,42 @@ function loadPageContent(page) {
         item.classList.toggle("task-content__btn-add_disabled");
       })
 
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
+      if (state == "ready") {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+  
+          const formData = new FormData(form);
+          const taksTitle = formData.get("Task title");
+  
+          const user_id = userListSelect.options[userListSelect.selectedIndex].value;
+          
+          createTask(taksTitle, state, user_id);
+  
+          form.classList.toggle("task-content__form_disabled");
+          item.classList.toggle("task-content__btn-add_disabled");
+  
+          updateAllTaskList(readyList, inProgressList, finishedList);
+        })
+      } else {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
 
-        const formData = new FormData(form);
-        const taksTitle = formData.get("Task title");
-
-        const user_id = userListSelect.options[userListSelect.selectedIndex].value;
-        
-        createTask(taksTitle, state, user_id);
-
-        form.classList.toggle("task-content__form_disabled");
-        item.classList.toggle("task-content__btn-add_disabled");
-
-        updateTaskList(readyList, inProgressList, finishedList);
-      })
+          if (state == "in-progress") {
+            changeTaskState(taskReadyListSelect.options[taskReadyListSelect.selectedIndex].value, state)
+            taskReadyListSelect.removeChild(taskReadyListSelect.options[taskReadyListSelect.selectedIndex])
+          }
+          
+          if (state == "finished") {
+            changeTaskState(taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex].value, state)
+            taskInProgressListSelect.removeChild(taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex])
+          }
+  
+          form.classList.toggle("task-content__form_disabled");
+          item.classList.toggle("task-content__btn-add_disabled");
+  
+          updateAllTaskList(readyList, inProgressList, finishedList);
+        })
+      }
     })
   }
 

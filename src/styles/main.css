@@ -58,12 +58,15 @@
   margin-bottom: 15px;
 }
 
+.task-content__form {
+  margin-top: 22px;
+}
+
 .task-content__form_disabled {
   display: none;
 }
 
 .task-content__input {
-  margin-top: 22px;
   margin-bottom: 6px;
 }
 

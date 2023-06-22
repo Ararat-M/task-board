@@ -42,10 +42,6 @@ export const filteredTaskList = function () {
   return { taskListReady, taskListInProgress, taskListFinished }
 }
 
-export function TaskListUpdate(taskList) {
-  taskList
-}
-
 export function findUserOfId(user_id) {
   const users = getFromStorage("users");
 

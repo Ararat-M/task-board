@@ -3,7 +3,7 @@ import { filteredTaskList } from "../utils"
 import { findUserOfId } from "../utils"
 import { appState } from "../app";
 
-export function updateTaskList(readyList, inProgressList, finishedList) {
+export function updateAllTaskList(readyList, inProgressList, finishedList) {
   let list;
 
   if (appState.currentUser.hasAdmin) {
