@@ -18,7 +18,7 @@ import { State } from "./state";
 import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
 import { createTask } from "./services/createTask";
-import { showTaskList } from "./services/showTaskList";
+import { updateTaskList } from "./services/updateTaskList";
 import { getFromStorage } from "./utils";
 import { filteredUserTaskList } from "./utils";
 import { Admin } from "./models/Admin"
@@ -30,8 +30,8 @@ export const appState = new State();
 // Admin.save(admin);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const login = "admin";
-  const password = "admin123";
+  const login = "alex";
+  const password = "alex123";
   authUser(login, password)
   loadPageContent("main");
 })
@@ -85,58 +85,54 @@ function loadPageContent(page) {
     const readyList = document.querySelector(".task-list__ready");
     const inProgressList = document.querySelector(".task-list__in-progress");
     const finishedList = document.querySelector(".task-list__finished");
-
-    showTaskList(appState.currentUser, readyList, inProgressList, finishedList);
-    console.log(appState.currentUser.hasAdmin);
-    if (appState.currentUser.hasAdmin) {
-      document.querySelectorAll(".task-item__task-executor").forEach((item) => {
-        item.style.display = "inline"
+    
+    const formList = document.querySelectorAll(".task-content__form");
+    const addBtnList = document.querySelectorAll(".task-content__btn-add");
+    
+    if (!appState.currentUser.hasAdmin) {
+      addBtnList.forEach((item) => {
+        if (item.dataset.state == "ready") item.classList.toggle("task-content__btn-add_disabled");
       })
     }
 
-    const inputList = document.querySelectorAll(".task-content__input");
-    const addBtnList = document.querySelectorAll(".task-content__btn-add");
-    const submitBtnList = document.querySelectorAll(".task-content__btn-submit");
-
+    updateTaskList(readyList, inProgressList, finishedList);
+    
     const users = getFromStorage("users").filter((item) => !item.hasAdmin)
 
     const userListSelect = document.querySelector("#user-list");
 
     users.forEach((item) => {
       const user = document.createElement("option");
-      user.textContent = item.login;
-      user.value = item.login;
 
-      user.dataset.executor = item.id;
+      user.textContent = item.login;
+      user.value = item.id;
 
       userListSelect.appendChild(user)
     })
 
     addBtnList.forEach((item, index) => {
+      const state = item.dataset.state;
+      const form = formList[index];
+      
       item.addEventListener("click", () => {
-        const state = item.dataset.state;
+        form.classList.toggle("task-content__form_disabled");
+        item.classList.toggle("task-content__btn-add_disabled");
+      })
 
-        const input = inputList[index];
-        const submitBtn = submitBtnList[index];
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-        if (state == "ready")  userListSelect.style.display = "block";
+        const formData = new FormData(form);
+        const taksTitle = formData.get("Task title");
+
+        const user_id = userListSelect.options[userListSelect.selectedIndex].value;
         
-        input.style.display = "block";
-        item.style.display = "none";
-        submitBtn.style.display = "block";
+        createTask(taksTitle, state, user_id);
 
-        submitBtn.addEventListener("click", () => {
-          const user_id = userListSelect.options[userListSelect.selectedIndex].dataset.executor;
-          console.log(createTask(input.value, state, user_id));
+        form.classList.toggle("task-content__form_disabled");
+        item.classList.toggle("task-content__btn-add_disabled");
 
-          if (state == "ready")  userListSelect.style.display = "none";
-
-          input.style.display = "none";
-          item.style.display = "flex";
-          submitBtn.style.display = "none";
-
-          loadPageContent("main")
-        })
+        updateTaskList(readyList, inProgressList, finishedList);
       })
     })
   }

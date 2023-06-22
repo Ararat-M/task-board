@@ -4,49 +4,53 @@
     <div class="task-content">
       <span class="task-content__title">Ready</span>
       <ul class="task-list task-list__ready"></ul>
-      <input class="task-content__input form-control me-2" data-state="ready" name="Task title" 
-        autocomplete="off" type="text" placeholder="Task title" aria-label="Task title">
-      <select id="user-list" class="task-content__select form-control me-2" data-state="ready"></select>
+      <form class="task-content__form task-content__form_disabled" data-state="ready">
+        <input class="task-content__input form-control me-2" data-state="ready" name="Task title" 
+          autocomplete="off" type="text" placeholder="Task title" aria-label="Task title">
+        <select id="user-list" class="task-content__select form-control me-2" data-state="ready"></select>
+        <button class="task-content__btn-submit" data-state="ready">
+          Submit
+        </button>
+      </form>
       <button class="task-content__btn-add" data-state="ready">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13 6H8V1C8 0.448 7.552 0 7 0C6.448 0 6 0.448 6 1V6H1C0.448 6 0 6.448 0 7C0 7.552 0.448 8 1 8H6V13C6 13.552 6.448 14 7 14C7.552 14 8 13.552 8 13V8H13C13.552 8 14 7.552 14 7C14 6.448 13.552 6 13 6Z" fill="#5E6C84"/>
         </svg>
         Add
       </button>
-      <button class="task-content__btn-submit" data-state="ready">
-        Submit
-      </button>
     </div>
     <!-- IN PROGRESS -->
     <div class="task-content">
       <span class="task-content__title">In Progress</span>
       <ul class="task-list task-list__in-progress"></ul>
-      <input class="task-content__input form-control me-2" data-state="ready" name="Task title" 
-        autocomplete="username" type="text" placeholder="Task title" aria-label="Task title">
+      <form class="task-content__form task-content__form_disabled" data-state="in_progress">
+        <select id="task-ready-list" class="task-content__task-ready-list form-control me-2" data-state="in-progress"></select>
+        <button class="task-content__btn-submit" data-state="in-progress">
+          Submit
+        </button>
+      </form>
       <button class="task-content__btn-add" data-state="in-progress">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13 6H8V1C8 0.448 7.552 0 7 0C6.448 0 6 0.448 6 1V6H1C0.448 6 0 6.448 0 7C0 7.552 0.448 8 1 8H6V13C6 13.552 6.448 14 7 14C7.552 14 8 13.552 8 13V8H13C13.552 8 14 7.552 14 7C14 6.448 13.552 6 13 6Z" fill="#5E6C84"/>
         </svg> 
         Add
       </button>
-      <button class="task-content__btn-submit" data-state="in-progress">
-        Submit
-      </button>
     </div>
     <!-- FINISHED -->
     <div class="task-content">
       <span class="task-content__title">Finished</span>
       <ul class="task-list task-list__finished"></ul>
-      <input class="task-content__input form-control me-2" data-state="ready" name="Task title" 
-        autocomplete="username" type="text" placeholder="Task title" aria-label="Task title">
+      <form class="task-content__form task-content__form_disabled" data-state="finished">
+        <select id="task-in-progress-list" class="task-content__task-in-progress-list form-control me-2" data-state="finished"></select>
+        <button class="task-content__btn-submit" data-state="finished">
+          Submit
+        </button>
+      </form>
       <button class="task-content__btn-add" data-state="finished">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13 6H8V1C8 0.448 7.552 0 7 0C6.448 0 6 0.448 6 1V6H1C0.448 6 0 6.448 0 7C0 7.552 0.448 8 1 8H6V13C6 13.552 6.448 14 7 14C7.552 14 8 13.552 8 13V8H13C13.552 8 14 7.552 14 7C14 6.448 13.552 6 13 6Z" fill="#5E6C84"/>
         </svg> 
         Add
-      </button>
-      <button class="task-content__btn-submit" data-state="finished">
-        Submit
       </button>
     </div>
   </div>
