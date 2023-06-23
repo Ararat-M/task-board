@@ -31,8 +31,8 @@ export const appState = new State();
 // Admin.save(admin);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const login = "elena";
-  const password = "elena123";
+  const login = "admin";
+  const password = "admin123";
   authUser(login, password)
   loadPageContent("main");
 })
@@ -49,7 +49,7 @@ function loadPageContent(page) {
   contentFooterElement.innerHTML = "";
 
   // User panel загрузиться только при appState.auth == true
-  LoadUserPanel()
+  loadUserPanel()
   
   // Загружаем контент страницы авторизации
   if (page === "auth") {
@@ -80,167 +80,21 @@ function loadPageContent(page) {
   
   // task board
   if (page === "main") {
-    contentMainElement.innerHTML = kanbanMain;
-    contentFooterElement.innerHTML = kanbanFooter;
-
-    const readyList = document.querySelector(".task-list__ready");
-    const inProgressList = document.querySelector(".task-list__in-progress");
-    const finishedList = document.querySelector(".task-list__finished");
-    
-    const formList = document.querySelectorAll(".task-content__form");
-    const addBtnList = document.querySelectorAll(".task-content__btn-add");
-    
-    if (!appState.currentUser.hasAdmin) {
-      addBtnList.forEach((item) => {
-        if (item.dataset.state == "ready") item.classList.toggle("task-content__btn-add_disabled");
-      })
-    }
-
-    updateAllTaskList(readyList, inProgressList, finishedList);
-    
-    const users = getFromStorage("users").filter((item) => !item.hasAdmin)
-
-    const userListSelect = document.querySelector("#user-list");
-    
-    users.forEach((item) => {
-      const user = document.createElement("option");
-      
-      user.textContent = item.login;
-      user.value = item.id;
-      
-      userListSelect.appendChild(user)
-    })
-    
-    const tasks = getFromStorage("tasks");
-
-    const taskReadyListSelect = document.querySelector("#task-ready-list-select")
-    const taskInProgressListSelect = document.querySelector("#task-in-progress-list-select")
-
-    tasks.forEach((item) => {
-      if (item.executor_id == appState.currentUser.id) {
-        if (item.state == "ready") {
-          const task = document.createElement("option");
-          task.textContent = item.title;
-          task.value = item.id;
-  
-          taskReadyListSelect.appendChild(task)
-        }
-  
-        if (item.state == "in-progress") {
-          const task = document.createElement("option");
-          task.textContent = item.title;
-          task.value = item.id;
-          taskInProgressListSelect.appendChild(task)
-        }
-      }
-    })
-
-    addBtnList.forEach((item, index) => {
-      const state = item.dataset.state;
-      const form = formList[index];
-      
-      item.addEventListener("click", () => {
-        form.classList.toggle("task-content__form_disabled");
-        item.classList.toggle("task-content__btn-add_disabled");
-      })
-      
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        if (state == "ready") {
-          const formData = new FormData(form);
-          const taksTitle = formData.get("Task title");
-  
-          const user_id = userListSelect.options[userListSelect.selectedIndex].value;
-          
-          createTask(taksTitle, state, user_id);
-        }
-
-        if (state == "in-progress" && taskReadyListSelect.options.length > 0) {
-          const currentOption = taskReadyListSelect.options[taskReadyListSelect.selectedIndex];
-
-          changeTaskState(currentOption.value, state);
-
-          taskInProgressListSelect.appendChild(currentOption);
-        }
-
-        if (state == "finished" && taskInProgressListSelect.options.length > 0) {
-          const currentOption = taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex];
-
-          changeTaskState(currentOption.value, state);
-
-          taskInProgressListSelect.removeChild(currentOption);
-        }
-
-        form.classList.toggle("task-content__form_disabled");
-        item.classList.toggle("task-content__btn-add_disabled");
-
-        updateAllTaskList(readyList, inProgressList, finishedList);
-      })
-    })
+    loadMainPage();
   }
 
   // add user
   if (page === "addUser") {
-    const containerUsers = document.createElement('div');
-    containerUsers.classList.add("user-container");
-    containerUsers.innerHTML = addUserForm;
-
-    contentMainElement.appendChild(containerUsers);
-    
-    const users = getFromStorage("users").filter((item) => !item.hasAdmin)
-    
-    users.reverse().forEach((item, index) => {
-      containerUsers.innerHTML += userCard;
-      
-      const login = document.querySelectorAll(".user-content__info")[index];
-      const taskCounterReady = document.querySelectorAll(".task-counter-list__item-ready")[index];
-      const taskCounterInProgress = document.querySelectorAll(".task-counter-list__item-in-progress")[index];
-      const taskCounterFinished = document.querySelectorAll(".task-counter-list__item-finished")[index];
-      
-      const tasks = filteredUserTaskList(item);
-      
-      login.textContent = item.login;
-      taskCounterReady.textContent = `Ready: ${tasks.taskListReady.length}`;
-      taskCounterInProgress.textContent = `In Progress: ${tasks.taskListInProgress.length}`;
-      taskCounterFinished.textContent = `Finished: ${tasks.taskListFinished.length}`;
-    });
-    
-    contentFooterElement.innerHTML = addUserFooter;
-
-    document.querySelector(".active-user__counter").textContent = users.length;
-    
-    const CreateUserForm = document.querySelector(".add-user-form");
-    CreateUserForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(CreateUserForm)
-      const login = formData.get("new-user-login");
-      const password = formData.get("new-user-password");
-
-      createUser(login, password);
-      loadPageContent("addUser")
-    })
+    loadAddUserPage();
   }
 
   // Profile
   if (page === "profile") {
-    contentMainElement.innerHTML = profile;
-
-    const profileIdArea = document.querySelector(".profile__info-id");
-    const profileLoginArea = document.querySelector(".profile__info-login");
-    const profileRoleArea = document.querySelector(".profile__info-role");
-
-    profileIdArea.textContent = `id: ${appState.currentUser.id}`;
-    profileLoginArea.textContent = `Login: ${appState.currentUser.login}`;
-
-    appState.currentUser.hasAdmin 
-      ? profileRoleArea.textContent = "Role: admin"
-      : profileRoleArea.textContent = "Role: user";
+    loadProfilePage();
   }
 }
 
-function LoadUserPanel() {
+function loadUserPanel() {
   if (!appState.auth) {
     return
   }
@@ -268,4 +122,178 @@ function LoadUserPanel() {
 
     loadPageContent("auth");
   })
+}
+
+function loadMainPage() {
+  if (!appState.auth) {
+    loadPageContent("auth");
+    return
+  }
+  
+  contentMainElement.innerHTML = kanbanMain;
+  contentFooterElement.innerHTML = kanbanFooter;
+
+  const readyList = document.querySelector(".task-list__ready");
+  const inProgressList = document.querySelector(".task-list__in-progress");
+  const finishedList = document.querySelector(".task-list__finished");
+  
+  const formList = document.querySelectorAll(".task-content__form");
+  const addBtnList = document.querySelectorAll(".task-content__btn-add");
+  
+  if (!appState.currentUser.hasAdmin) {
+    addBtnList.forEach((item) => {
+      if (item.dataset.state == "ready") item.classList.toggle("task-content__btn-add_disabled");
+    })
+  }
+
+  updateAllTaskList(readyList, inProgressList, finishedList);
+  
+  const users = getFromStorage("users").filter((item) => !item.hasAdmin)
+
+  const userListSelect = document.querySelector("#user-list");
+  
+  users.forEach((item) => {
+    const user = document.createElement("option");
+    
+    user.textContent = item.login;
+    user.value = item.id;
+    
+    userListSelect.appendChild(user)
+  })
+  
+  const tasks = getFromStorage("tasks");
+
+  const taskReadyListSelect = document.querySelector("#task-ready-list-select")
+  const taskInProgressListSelect = document.querySelector("#task-in-progress-list-select")
+
+  tasks.forEach((item) => {
+    if (item.executor_id == appState.currentUser.id || appState.currentUser.hasAdmin) {
+      if (item.state == "ready") {
+        const task = document.createElement("option");
+        task.textContent = item.title;
+        task.value = item.id;
+
+        taskReadyListSelect.appendChild(task)
+      }
+
+      if (item.state == "in-progress") {
+        const task = document.createElement("option");
+        task.textContent = item.title;
+        task.value = item.id;
+        taskInProgressListSelect.appendChild(task)
+      }
+    }
+  })
+
+  addBtnList.forEach((item, index) => {
+    const state = item.dataset.state;
+    const form = formList[index];
+    
+    item.addEventListener("click", () => {
+      form.classList.toggle("task-content__form_disabled");
+      item.classList.toggle("task-content__btn-add_disabled");
+    })
+    
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (state == "ready") {
+        const formData = new FormData(form);
+        const taksTitle = formData.get("Task title");
+
+        const user_id = userListSelect.options[userListSelect.selectedIndex].value;
+        
+        createTask(taksTitle, state, user_id);
+      }
+
+      if (state == "in-progress" && taskReadyListSelect.options.length > 0) {
+        const currentOption = taskReadyListSelect.options[taskReadyListSelect.selectedIndex];
+
+        changeTaskState(currentOption.value, state);
+
+        taskInProgressListSelect.appendChild(currentOption);
+      }
+
+      if (state == "finished" && taskInProgressListSelect.options.length > 0) {
+        const currentOption = taskInProgressListSelect.options[taskInProgressListSelect.selectedIndex];
+
+        changeTaskState(currentOption.value, state);
+
+        taskInProgressListSelect.removeChild(currentOption);
+      }
+
+      form.classList.toggle("task-content__form_disabled");
+      item.classList.toggle("task-content__btn-add_disabled");
+
+      updateAllTaskList(readyList, inProgressList, finishedList);
+    })
+  })
+}
+
+function loadAddUserPage() {
+  if (!appState.auth) {
+    loadPageContent("auth");
+    return
+  }
+
+  const containerUsers = document.createElement('div');
+  containerUsers.classList.add("user-container");
+  containerUsers.innerHTML = addUserForm;
+
+  contentMainElement.appendChild(containerUsers);
+  
+  const users = getFromStorage("users").filter((item) => !item.hasAdmin)
+  
+  users.reverse().forEach((item, index) => {
+    containerUsers.innerHTML += userCard;
+    
+    const login = document.querySelectorAll(".user-content__info")[index];
+    const taskCounterReady = document.querySelectorAll(".task-counter-list__item-ready")[index];
+    const taskCounterInProgress = document.querySelectorAll(".task-counter-list__item-in-progress")[index];
+    const taskCounterFinished = document.querySelectorAll(".task-counter-list__item-finished")[index];
+    
+    const tasks = filteredUserTaskList(item);
+    
+    login.textContent = item.login;
+    taskCounterReady.textContent = `Ready: ${tasks.taskListReady.length}`;
+    taskCounterInProgress.textContent = `In Progress: ${tasks.taskListInProgress.length}`;
+    taskCounterFinished.textContent = `Finished: ${tasks.taskListFinished.length}`;
+  });
+  
+  contentFooterElement.innerHTML = addUserFooter;
+
+  document.querySelector(".active-user__counter").textContent = users.length;
+  
+  const CreateUserForm = document.querySelector(".add-user-form");
+
+  CreateUserForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(CreateUserForm)
+    const login = formData.get("new-user-login");
+    const password = formData.get("new-user-password");
+
+    createUser(login, password);
+    loadPageContent("addUser")
+  })
+}
+
+function loadProfilePage() {
+  if (!appState.auth) {
+    loadPageContent("auth");
+    return
+  }
+  
+  contentMainElement.innerHTML = profile;
+
+  const profileIdArea = document.querySelector(".profile__info-id");
+  const profileLoginArea = document.querySelector(".profile__info-login");
+  const profileRoleArea = document.querySelector(".profile__info-role");
+
+  profileIdArea.textContent = `id: ${appState.currentUser.id}`;
+  profileLoginArea.textContent = `Login: ${appState.currentUser.login}`;
+
+  appState.currentUser.hasAdmin 
+    ? profileRoleArea.textContent = "Role: admin"
+    : profileRoleArea.textContent = "Role: user";
 }
