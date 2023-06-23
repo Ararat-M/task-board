@@ -3,6 +3,10 @@ import "./styles/style.css";
 import "./styles/addUser.css";
 import "./styles/profile.css";
 import "./styles/main.css";
+import { getFromStorage } from "./utils";
+import { filteredUserTaskList } from "./utils";
+import { createFirstAdmin } from "./utils";
+import { taskRealoder } from "./utils"
 import kanbanMain from "./templates/kanbanMain.html";
 import kanbanFooter from "./templates/kanbanFooter.html";
 import noAccess from "./templates/noAccess.html";
@@ -19,18 +23,13 @@ import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
 import { createTask } from "./services/createTask";
 import { updateAllTaskList } from "./services/updateAllTaskList";
-import { getFromStorage } from "./utils";
-import { filteredUserTaskList } from "./utils";
-import { Admin } from "./models/Admin"
 import { changeTaskState } from "./services/changeTaskState";
 
 
 export const appState = new State();
 
-// const admin = new Admin("admin", "admin123");
-// Admin.save(admin);
-
 document.addEventListener("DOMContentLoaded", () => {
+  createFirstAdmin();
   const login = "admin";
   const password = "admin123";
   authUser(login, password)
@@ -203,7 +202,12 @@ function loadMainPage() {
 
         const user_id = userListSelect.options[userListSelect.selectedIndex].value;
         
-        createTask(taksTitle, state, user_id);
+        const task = createTask(taksTitle, state, user_id);
+
+        const taskOption = document.createElement("option");
+        taskOption.textContent = task.title;
+        taskOption.value = task.id;
+        taskReadyListSelect.appendChild(taskOption)
       }
 
       if (state == "in-progress" && taskReadyListSelect.options.length > 0) {
@@ -227,6 +231,10 @@ function loadMainPage() {
 
       updateAllTaskList(readyList, inProgressList, finishedList);
     })
+  })
+
+  document.querySelector(".task-info__exit-btn").addEventListener("click", () => {
+    document.querySelector(".task-info").classList.remove("task-info_active");
   })
 }
 

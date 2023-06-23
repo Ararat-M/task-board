@@ -58,5 +58,11 @@ function createTaskElement(task) {
     taskItem.appendChild(taskExecutor);
   }
 
+  taskItem.addEventListener("click", () => {
+    document.querySelector(".task-info__title").textContent = task.title;
+    document.querySelector(".task-info__description").textContent = task.description;
+    document.querySelector(".task-info").classList.add("task-info_active");
+  })
+
   return taskItem
 }
