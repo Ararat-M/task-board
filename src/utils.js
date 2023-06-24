@@ -20,73 +20,11 @@ export const deleteInStorage = function (obj, key) {
   localStorage.setItem(key, JSON.stringify(storageDataFiltered));
 };
 
-export const filteredUserTaskList = function (user) {
-  const taskList = getFromStorage("tasks");
+export function findOfId(obj_id, storageKey) {
+  const storageData = getFromStorage(storageKey);
 
-  const taskListReady = taskList.filter(item => {
-    return item.executor_id == user.id && item.state == "ready"
-  });
-
-  const taskListInProgress = taskList.filter(item => {
-    return item.executor_id == user.id && item.state == "in-progress"
-  });
-  
-  const taskListFinished = taskList.filter(item => {
-    return item.executor_id == user.id && item.state == "finished"
-  });
-  
-  return { taskListReady, taskListInProgress, taskListFinished }
-}
-
-export const filteredTaskList = function () {
-  const taskList = getFromStorage("tasks");
-  
-  const taskListReady = taskList.filter(item => {
-    return item.state == "ready"
-  });
-  
-  const taskListInProgress = taskList.filter(item => {
-    return item.state == "in-progress"
-  });
-  
-  const taskListFinished = taskList.filter(item => {
-    return item.state == "finished"
-  });
-  
-  return { taskListReady, taskListInProgress, taskListFinished }
-}
-
-export function findUserOfId(user_id) {
-  const users = getFromStorage("users");
-
-  for (let i = 0; i < users.length; i++) {
-    if (users[i].id == user_id) return users[i]
-  }
-}
-
-export function taskRealoder() {
-  const taskList = getFromStorage("tasks");
-
-  const newTaskList = [];
-
-  for (let i = 0; i < taskList.length; i++) {
-    const currentTask = taskList[i];
-
-    currentTask.state = "ready"
-    currentTask.description = `
-    Это был темный лес, издали казавшийся непроходимым. Там Пахапиль охотился, глушил рыбу, спал на еловых ветках. Короче – жил, пока русские не выгнали оккупантов. А когда немцы ушли, Пахапиль вернулся. Он появился в Раквере, где советский капитан наградил его медалью. Медаль была украшена четырьмя непонятными словами, фигурой и восклицательным знаком.
-    `;
-    
-    newTaskList.push(currentTask);
-  }
-
-  localStorage.setItem('tasks', JSON.stringify(newTaskList));
-}
-
-export function createFirstAdmin() {
-  if (getFromStorage("users").length <= 0) {
-    const admin = new Admin("admin", "admin123");
-    Admin.save(admin);
+  for (let i = 0; i < storageData.length; i++) {
+    if (storageData[i].id == obj_id) return storageData[i]
   }
 }
 
@@ -96,4 +34,63 @@ export function incrementCounter(counterNode) {
 
 export function decrementCounter(counterNode) {
   counterNode.innerHTML = Number(counterNode.textContent) + -1;
+}
+
+export function clearNode(list) {
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+}
+
+export function createFirstAdmin() {
+  if (getFromStorage("users").length <= 0) {
+    const admin = new Admin("admin", "admin123");
+    Admin.save(admin);
+  }
+}
+
+export function calculateTask() {
+  const activeTaskCounterNode = document.querySelector(".item-active__counter");
+  const finishedTaskCounterNode = document.querySelector(".item-finished__counter");
+
+  const taskListFiltered = filteredTaskList();
+  
+  activeTaskCounterNode.textContent = taskListFiltered.taskListInProgress.length;
+  finishedTaskCounterNode.textContent = taskListFiltered.taskListFinished.length;
+}
+
+export function filteredTaskList (user = "") {
+  const taskList = getFromStorage("tasks");
+
+  // если запрос для user
+  if (user) {
+    const taskListReady = taskList.filter(item => {
+      return item.executor_id == user.id && item.state == "ready";
+    });
+
+    const taskListInProgress = taskList.filter(item => {
+      return item.executor_id == user.id && item.state == "in-progress";
+    });
+    
+    const taskListFinished = taskList.filter(item => {
+      return item.executor_id == user.id && item.state == "finished";
+    });
+
+    return { taskListReady, taskListInProgress, taskListFinished }
+  }
+
+  // если запрос для admin
+  const taskListReady = taskList.filter(item => {
+    return item.state == "ready";
+  });
+  
+  const taskListInProgress = taskList.filter(item => {
+    return item.state == "in-progress";
+  });
+  
+  const taskListFinished = taskList.filter(item => {
+    return item.state == "finished";
+  });
+
+  return { taskListReady, taskListInProgress, taskListFinished }
 }

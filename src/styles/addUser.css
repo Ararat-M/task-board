@@ -9,6 +9,7 @@
 
 .user-content {
   max-width: 200px;
+  min-height: 200px;
   flex-shrink: 0;
   flex-grow: 1;
   padding: 20px;

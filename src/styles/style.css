@@ -121,3 +121,13 @@ button {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
+
+.greeting {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.greeting__title {
+  margin-right: auto;
+  color:#FFFFFF;
+}

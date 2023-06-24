@@ -1,6 +1,6 @@
 import { getFromStorage } from "../utils";
 
-export function changeTaskState(task_id, newState) {
+export function changeTaskStateOfId(task_id, newState) {
   const taskList = getFromStorage("tasks");
 
   const newTaskList = [];

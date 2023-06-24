@@ -1,9 +1,9 @@
 import { BaseModel } from "./BaseModel";
 import { addToStorage } from "../utils";
-import { deleteInStorage } from "../utils";
+import { deleteInStorage, getFromStorage } from "../utils";
 
 export class Task extends BaseModel {
-  constructor(title, state, user_id, description = "") {
+  constructor(title, state, user_id, description = "description") {
     super();
     this.title = title;
     this.state = state;
@@ -28,5 +28,48 @@ export class Task extends BaseModel {
     } catch (e) {
       throw new Error(e);
     }
+  }
+
+  static change(task) {
+    try {
+      const taskList = getFromStorage("tasks");
+
+      const newTaskList = [];
+
+      for (let i = 0; i < taskList.length; i++) {
+        const currentTask = taskList[i];
+
+        if (currentTask.id == task.id) {
+          newTaskList.push(task)
+          continue
+        }
+
+        newTaskList.push(currentTask);
+      }
+
+      localStorage.setItem('tasks', JSON.stringify(newTaskList));
+
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static changeStateOfId(task_id, newState) {
+    const taskList = getFromStorage("tasks");
+  
+    const newTaskList = [];
+  
+    for (let i = 0; i < taskList.length; i++) {
+      const currentTask = taskList[i];
+  
+      if (currentTask.id == task_id) {
+        currentTask.state = newState;
+      }
+  
+      newTaskList.push(currentTask);
+    }
+  
+    localStorage.setItem('tasks', JSON.stringify(newTaskList));
   }
 }
