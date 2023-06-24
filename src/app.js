@@ -5,19 +5,20 @@ import "./styles/profile.css";
 import "./styles/main.css";
 import { getFromStorage } from "./utils";
 import { filteredUserTaskList } from "./utils";
-import { createFirstAdmin } from "./utils";
-import { taskRealoder } from "./utils"
+import { createFirstAdmin, taskRealoder } from "./utils";
+import { incrementCounter } from "./utils";
+import { decrementCounter } from "./utils";
 import kanbanMain from "./templates/kanbanMain.html";
 import kanbanFooter from "./templates/kanbanFooter.html";
 import noAccess from "./templates/noAccess.html";
-import authForm from "./templates/authForm.html"
-import userInfo from "./templates/userInfo.html"
-import userCard from "./templates/userCard.html"
-import addUserFooter from "./templates/addUserFooter.html"
-import adminDropdown from "./templates/adminDropdown.html"
-import userDropdown from "./templates/userDropdown.html"
-import addUserForm from "./templates/addUserForm.html"
-import profile from "./templates/profile.html"
+import authForm from "./templates/authForm.html";
+import userInfo from "./templates/userInfo.html";
+import userCard from "./templates/userCard.html";
+import addUserFooter from "./templates/addUserFooter.html";
+import adminDropdown from "./templates/adminDropdown.html";
+import userDropdown from "./templates/userDropdown.html";
+import addUserForm from "./templates/addUserForm.html";
+import profile from "./templates/profile.html";
 import { State } from "./state";
 import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
@@ -25,14 +26,14 @@ import { createTask } from "./services/createTask";
 import { updateAllTaskList } from "./services/updateAllTaskList";
 import { changeTaskState } from "./services/changeTaskState";
 
-
 export const appState = new State();
 
 document.addEventListener("DOMContentLoaded", () => {
+  // taskRealoder()
   createFirstAdmin();
   const login = "admin";
   const password = "admin123";
-  authUser(login, password)
+  authUser(login, password);
   loadPageContent("main");
 })
 
@@ -126,11 +127,15 @@ function loadUserPanel() {
 function loadMainPage() {
   if (!appState.auth) {
     loadPageContent("auth");
+    
     return
   }
   
   contentMainElement.innerHTML = kanbanMain;
   contentFooterElement.innerHTML = kanbanFooter;
+
+  const activeTaskCounterNode = document.querySelector(".item-active__counter");
+  const finishedTaskCounterNode = document.querySelector(".item-finished__counter");
 
   const readyList = document.querySelector(".task-list__ready");
   const inProgressList = document.querySelector(".task-list__in-progress");
@@ -146,7 +151,7 @@ function loadMainPage() {
   }
 
   updateAllTaskList(readyList, inProgressList, finishedList);
-  
+
   const users = getFromStorage("users").filter((item) => !item.hasAdmin)
 
   const userListSelect = document.querySelector("#user-list");
@@ -164,22 +169,32 @@ function loadMainPage() {
 
   const taskReadyListSelect = document.querySelector("#task-ready-list-select")
   const taskInProgressListSelect = document.querySelector("#task-in-progress-list-select")
+  
 
   tasks.forEach((item) => {
     if (item.executor_id == appState.currentUser.id || appState.currentUser.hasAdmin) {
       if (item.state == "ready") {
         const task = document.createElement("option");
+
         task.textContent = item.title;
         task.value = item.id;
 
         taskReadyListSelect.appendChild(task)
       }
-
+      
       if (item.state == "in-progress") {
         const task = document.createElement("option");
+
         task.textContent = item.title;
         task.value = item.id;
-        taskInProgressListSelect.appendChild(task)
+
+        taskInProgressListSelect.appendChild(task);
+
+        incrementCounter(activeTaskCounterNode);
+      }
+      
+      if (item.state == "finished") {
+        incrementCounter(finishedTaskCounterNode);
       }
     }
   })
@@ -189,6 +204,29 @@ function loadMainPage() {
     const form = formList[index];
     
     item.addEventListener("click", () => {
+      if (state == "in-progress" && taskReadyListSelect.options.length <= 0) {
+        console.error("Список Ready пуст");
+        item.classList.toggle("task-content__btn-add_error");
+
+        setTimeout(() => {
+          item.classList.toggle("task-content__btn-add_error");
+        }, 200)
+
+        return
+      }
+
+      if (state == "finished" && taskInProgressListSelect.options.length <= 0) {
+        console.error("Список In Progress пуст");
+
+        item.classList.toggle("task-content__btn-add_error");
+
+        setTimeout(() => {
+          item.classList.toggle("task-content__btn-add_error");
+        }, 200)
+
+        return
+      }
+
       form.classList.toggle("task-content__form_disabled");
       item.classList.toggle("task-content__btn-add_disabled");
     })
@@ -203,17 +241,21 @@ function loadMainPage() {
         const user_id = userListSelect.options[userListSelect.selectedIndex].value;
         
         const task = createTask(taksTitle, state, user_id);
-
-        const taskOption = document.createElement("option");
-        taskOption.textContent = task.title;
-        taskOption.value = task.id;
-        taskReadyListSelect.appendChild(taskOption)
+        
+        if (task) {
+          const taskOption = document.createElement("option");
+          taskOption.textContent = task.title;
+          taskOption.value = task.id;
+          taskReadyListSelect.appendChild(taskOption)
+        }
       }
 
       if (state == "in-progress" && taskReadyListSelect.options.length > 0) {
         const currentOption = taskReadyListSelect.options[taskReadyListSelect.selectedIndex];
 
         changeTaskState(currentOption.value, state);
+
+        incrementCounter(activeTaskCounterNode);
 
         taskInProgressListSelect.appendChild(currentOption);
       }
@@ -223,6 +265,10 @@ function loadMainPage() {
 
         changeTaskState(currentOption.value, state);
 
+        decrementCounter(activeTaskCounterNode);
+
+        incrementCounter(finishedTaskCounterNode);
+
         taskInProgressListSelect.removeChild(currentOption);
       }
 
@@ -231,10 +277,6 @@ function loadMainPage() {
 
       updateAllTaskList(readyList, inProgressList, finishedList);
     })
-  })
-
-  document.querySelector(".task-info__exit-btn").addEventListener("click", () => {
-    document.querySelector(".task-info").classList.remove("task-info_active");
   })
 }
 
@@ -281,8 +323,9 @@ function loadAddUserPage() {
     const login = formData.get("new-user-login");
     const password = formData.get("new-user-password");
 
-    createUser(login, password);
-    loadPageContent("addUser")
+    if ( createUser(login, password) ) {
+      loadPageContent("addUser")
+    };
   })
 }
 

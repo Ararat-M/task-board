@@ -76,6 +76,11 @@ button {
   border: 1px solid white;
   border-radius: 5px;
   color: #FFFFFF;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: hsla(0, 59%, 41%, 0.5);
 }
 
 /* DROPDOWN */

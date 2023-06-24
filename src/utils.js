@@ -6,8 +6,18 @@ export const getFromStorage = function (key) {
 
 export const addToStorage = function (obj, key) {
   const storageData = getFromStorage(key);
+
   storageData.push(obj);
+
   localStorage.setItem(key, JSON.stringify(storageData));
+};
+
+export const deleteInStorage = function (obj, key) {
+  const storageData = getFromStorage(key);
+
+  const storageDataFiltered = storageData.filter((item) => item.id != obj.id);
+
+  localStorage.setItem(key, JSON.stringify(storageDataFiltered));
 };
 
 export const filteredUserTaskList = function (user) {
@@ -16,9 +26,11 @@ export const filteredUserTaskList = function (user) {
   const taskListReady = taskList.filter(item => {
     return item.executor_id == user.id && item.state == "ready"
   });
+
   const taskListInProgress = taskList.filter(item => {
     return item.executor_id == user.id && item.state == "in-progress"
   });
+  
   const taskListFinished = taskList.filter(item => {
     return item.executor_id == user.id && item.state == "finished"
   });
@@ -76,4 +88,12 @@ export function createFirstAdmin() {
     const admin = new Admin("admin", "admin123");
     Admin.save(admin);
   }
+}
+
+export function incrementCounter(counterNode) {
+  counterNode.innerHTML = Number(counterNode.textContent) + 1;
+}
+
+export function decrementCounter(counterNode) {
+  counterNode.innerHTML = Number(counterNode.textContent) + -1;
 }

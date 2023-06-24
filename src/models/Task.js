@@ -1,5 +1,6 @@
 import { BaseModel } from "./BaseModel";
 import { addToStorage } from "../utils";
+import { deleteInStorage } from "../utils";
 
 export class Task extends BaseModel {
   constructor(title, state, user_id, description = "") {
@@ -14,6 +15,15 @@ export class Task extends BaseModel {
   static save(task) {
     try {
       addToStorage(task, task.storageKey);
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static delete(task) {
+    try {
+      deleteInStorage(task, task.storageKey);
       return true;
     } catch (e) {
       throw new Error(e);
