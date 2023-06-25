@@ -23,9 +23,9 @@ import { buttonErr } from "./utils";
 import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
 import { createTask } from "./services/createTask";
-import { updateAllTaskList } from "./scripts/updateAllTaskList";
-import { updateAllListSelect } from "./scripts/updateAllListSelect";
-import { changeTaskStateOfId } from "./scripts/changeTaskStateOfId";
+import { updateAllTaskList } from "./services/updateAllTaskList";
+import { updateAllListSelect } from "./services/updateAllListSelect";
+import { changeTaskStateOfId } from "./services/changeTaskStateOfId";
 
 export const appState = new State();
 
