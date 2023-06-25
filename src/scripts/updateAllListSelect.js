@@ -7,7 +7,19 @@ export function updateAllListSelect() {
 
   const taskReadyListSelect = document.querySelector("#task-ready-list-select");
   const taskInProgressListSelect = document.querySelector("#task-in-progress-list-select");
+  const userListSelect = document.querySelector("#user-list");
   
+  const users = getFromStorage("users").filter((item) => !item.hasAdmin)
+
+  users.forEach((item) => {
+    const user = document.createElement("option");
+    
+    user.textContent = item.login;
+    user.value = item.id;
+    
+    userListSelect.appendChild(user)
+  })
+
   clearNode(taskReadyListSelect);
   clearNode(taskInProgressListSelect);
 
@@ -33,5 +45,5 @@ export function updateAllListSelect() {
     }
   })
 
-  return [taskReadyListSelect, taskInProgressListSelect]
+  return [userListSelect, taskReadyListSelect, taskInProgressListSelect]
 }

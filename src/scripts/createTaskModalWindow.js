@@ -1,13 +1,22 @@
 import { Task } from "../models/Task";
+import { findOfId } from "../utils";
 import { updateAllListSelect } from "./updateAllListSelect";
 import { updateAllTaskList } from "./updateAllTaskList";
 
 export function createTaskModalWindow(task) {
+  const modalWindowList = document.querySelectorAll(".task-info");
+  
+  for (let i = 0; i < modalWindowList.length; i++) {
+    if (task.id == modalWindowList[i].dataset.task_id) {
+      return modalWindowList[i];
+    }
+  }
+
   const taskInfo = document.createElement("div");
   const taskInfoTitle = document.createElement("span");
   const taskInfoDescription = document.createElement("p");
   const taskInfoExitBtn = document.createElement("button");
-
+  
   taskInfo.classList.add("task-info")
   taskInfoTitle.classList.add("task-info__title")
   taskInfoDescription.classList.add("task-info__description")

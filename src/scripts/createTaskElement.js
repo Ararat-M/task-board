@@ -40,14 +40,25 @@ export function createTaskElement(task) {
 
   taskDeleteBtn.addEventListener("mouseenter", (e) => {
     e.currentTarget.previousElementSibling.classList.toggle("task-item__content_delete-target")
+    
   })
-
+  
   taskDeleteBtn.addEventListener("click", (e) => {
     e.currentTarget.previousElementSibling.classList.toggle("task-item__content_delete-target")
     
     const taskNode = e.currentTarget.parentNode;
-    taskNode.parentNode.removeChild(taskNode);
+    const modalWindowList = document.querySelectorAll(".task-info");
+    
+    for (let i = 0; i < modalWindowList.length; i++) {
+      const currentModalWindow = modalWindowList[i]
 
+      if (task.id == currentModalWindow.dataset.task_id) {
+        currentModalWindow.parentNode.removeChild(currentModalWindow)
+      }
+    }
+
+    taskNode.parentNode.removeChild(taskNode);
+    
     Task.delete(task);
 
     updateAllListSelect();

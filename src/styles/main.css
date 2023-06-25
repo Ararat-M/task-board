@@ -122,23 +122,23 @@
   display: none;
 }
 
-.task-content__btn-add_error {
+.btn_error {
   transition: color 0.2s;
 }
 
-.task-content__btn-add_error > svg > path {
+.btn_error > svg > path {
   transition: fill 0.2s;
 }
 
-.task-content__btn-add_error:hover > svg > path {
+.btn_error:hover > svg > path {
   fill: hsl(0, 100%, 30%);
 }
 
-.task-content__btn-add_error {
+.btn_error {
   color: hsl(0, 100%, 30%);
 }
 
-.task-content__btn-add_error:hover {
+.btn_error:hover {
   color: hsl(0, 100%, 30%);
 }
 

@@ -1,3 +1,4 @@
+import { appState } from "./app";
 import { Admin } from "./models/Admin";
 
 export const getFromStorage = function (key) {
@@ -52,9 +53,15 @@ export function createFirstAdmin() {
 export function calculateTask() {
   const activeTaskCounterNode = document.querySelector(".item-active__counter");
   const finishedTaskCounterNode = document.querySelector(".item-finished__counter");
+   
+  let taskListFiltered;
 
-  const taskListFiltered = filteredTaskList();
-  
+  if (!appState.currentUser.hasAdmin) {
+    taskListFiltered = filteredTaskList(appState.currentUser);
+  } else {
+    taskListFiltered = filteredTaskList();
+  }
+
   activeTaskCounterNode.textContent = taskListFiltered.taskListInProgress.length;
   finishedTaskCounterNode.textContent = taskListFiltered.taskListFinished.length;
 }
@@ -93,4 +100,14 @@ export function filteredTaskList (user = "") {
   });
 
   return { taskListReady, taskListInProgress, taskListFinished }
+}
+
+export function buttonErr(btn, errMessage) {
+  console.error(errMessage);
+
+  btn.classList.toggle("btn_error");
+
+  setTimeout(() => {
+    btn.classList.toggle("btn_error");
+  }, 200)
 }

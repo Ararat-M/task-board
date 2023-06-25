@@ -19,8 +19,7 @@ import { State } from "./state";
 import { getFromStorage } from "./utils";
 import { filteredTaskList } from "./utils";
 import { createFirstAdmin } from "./utils";
-import { incrementCounter } from "./utils";
-import { decrementCounter } from "./utils";
+import { buttonErr } from "./utils";
 import { authUser } from "./services/auth";
 import { createUser } from "./services/createUser";
 import { createTask } from "./services/createTask";
@@ -129,40 +128,23 @@ function loadUserPanel() {
 function loadMainPage() {
   if (!appState.auth) {
     loadPageContent("auth");
-    
     return
   }
   
   contentMainElement.innerHTML = kanbanMain;
   contentFooterElement.innerHTML = kanbanFooter;
 
-  const activeTaskCounterNode = document.querySelector(".item-active__counter");
-  const finishedTaskCounterNode = document.querySelector(".item-finished__counter");
-  const formList = document.querySelectorAll(".task-content__form");
   const addBtnList = document.querySelectorAll(".task-content__btn-add");
-  
+  const formList = document.querySelectorAll(".task-content__form");
+  const inputList = document.querySelectorAll(".task-content__input");
+
+  const [userListSelect, taskReadyListSelect, taskInProgressListSelect] = updateAllListSelect();
+
   if (!appState.currentUser.hasAdmin) {
     addBtnList.forEach((item) => {
       if (item.dataset.state == "ready") item.classList.toggle("task-content__btn-add_disabled");
     })
   }
-
-  updateAllTaskList();
-
-  const users = getFromStorage("users").filter((item) => !item.hasAdmin)
-
-  const userListSelect = document.querySelector("#user-list");
-  
-  users.forEach((item) => {
-    const user = document.createElement("option");
-    
-    user.textContent = item.login;
-    user.value = item.id;
-    
-    userListSelect.appendChild(user)
-  })
-
-  const [taskReadyListSelect, taskInProgressListSelect] = updateAllListSelect();
 
   addBtnList.forEach((item, index) => {
     const state = item.dataset.state;
@@ -170,39 +152,32 @@ function loadMainPage() {
     
     item.addEventListener("click", () => {
       if (state == "in-progress" && taskReadyListSelect.options.length <= 0) {
-        console.error("Список Ready пуст");
-        item.classList.toggle("task-content__btn-add_error");
-
-        setTimeout(() => {
-          item.classList.toggle("task-content__btn-add_error");
-        }, 200)
-
+        buttonErr(item, "Список Ready пуст");
         return
       }
 
       if (state == "finished" && taskInProgressListSelect.options.length <= 0) {
-        console.error("Список In Progress пуст");
-
-        item.classList.toggle("task-content__btn-add_error");
-
-        setTimeout(() => {
-          item.classList.toggle("task-content__btn-add_error");
-        }, 200)
-
+        buttonErr(item, "Список In Progress пуст");
         return
       }
 
       form.classList.toggle("task-content__form_disabled");
       item.classList.toggle("task-content__btn-add_disabled");
     })
-    
-    form.addEventListener("submit", (e) => {
+  })
+
+  formList.forEach((item, index) => {
+    const state = item.dataset.state;
+    const addBtn = addBtnList[index];
+    const input = inputList[index];
+
+    item.addEventListener("submit", (e) => {
       e.preventDefault();
 
       if (state == "ready") {
-        const formData = new FormData(form);
-        const taksTitle = formData.get("Task title");
-
+        const taksTitle = input.value;
+        input.value = "";
+        
         const user_id = userListSelect.options[userListSelect.selectedIndex].value;
         
         const task = createTask(taksTitle, state, user_id);
@@ -220,8 +195,6 @@ function loadMainPage() {
 
         changeTaskStateOfId(currentOption.value, state);
 
-        incrementCounter(activeTaskCounterNode);
-
         taskInProgressListSelect.appendChild(currentOption);
       }
 
@@ -230,19 +203,17 @@ function loadMainPage() {
 
         changeTaskStateOfId(currentOption.value, state);
 
-        decrementCounter(activeTaskCounterNode);
-
-        incrementCounter(finishedTaskCounterNode);
-
         taskInProgressListSelect.removeChild(currentOption);
       }
 
-      form.classList.toggle("task-content__form_disabled");
-      item.classList.toggle("task-content__btn-add_disabled");
+      item.classList.toggle("task-content__form_disabled");
+      addBtn.classList.toggle("task-content__btn-add_disabled");
 
       updateAllTaskList();
     })
   })
+
+  updateAllTaskList();
 }
 
 function loadAddUserPage() {
