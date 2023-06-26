@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: [
     new HTMLPlugin({
+      filename: 'index.html',
       template: "./src/index.html",
     }),
     new CleanWebpackPlugin(),
