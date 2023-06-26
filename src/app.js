@@ -98,7 +98,7 @@ function loadUserPanel() {
     return
   }
 
-  greetingTitleNode.textContent = `Здравствуй ${appState.currentUser.login}!!!`;
+  greetingTitleNode.textContent = `Здравствуйте, ${appState.currentUser.login}`;
 
   contentUserPanelElement.innerHTML = userInfo;
     
