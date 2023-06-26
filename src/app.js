@@ -151,6 +151,11 @@ function loadMainPage() {
     const form = formList[index];
     
     item.addEventListener("click", () => {
+      if (state == "ready" && taskReadyListSelect.options.length <= 0) {
+        buttonErr(item, "Некому назначить задачу, создайте пользователя");
+        return
+      }
+
       if (state == "in-progress" && taskReadyListSelect.options.length <= 0) {
         buttonErr(item, "Список Ready пуст");
         return
