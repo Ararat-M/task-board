@@ -151,7 +151,7 @@ function loadMainPage() {
     const form = formList[index];
     
     item.addEventListener("click", () => {
-      if (state == "ready" && taskReadyListSelect.options.length <= 0) {
+      if (state == "ready" && userListSelect.options.length <= 0) {
         buttonErr(item, "Некому назначить задачу, создайте пользователя");
         return
       }

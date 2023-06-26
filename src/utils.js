@@ -62,7 +62,7 @@ export function calculateTask() {
     taskListFiltered = filteredTaskList();
   }
 
-  activeTaskCounterNode.textContent = taskListFiltered.taskListInProgress.length;
+  activeTaskCounterNode.textContent = taskListFiltered.taskListReady.length;
   finishedTaskCounterNode.textContent = taskListFiltered.taskListFinished.length;
 }
 
