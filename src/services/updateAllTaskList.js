@@ -2,8 +2,16 @@ import { filteredTaskList } from "../utils"
 import { clearNode, calculateTask } from "../utils";
 import { appState } from "../app";
 import { createTaskElement } from "./createTaskElement";
+import { dragoverHandler, dropHandler } from "./dragAndDropHandlers";
 
 export function updateAllTaskList() {
+  const taskListArr = document.querySelectorAll(".task-content");
+
+  taskListArr.forEach((item) => {
+    item.ondrop = dropHandler;
+    item.ondragover = dragoverHandler;
+  })
+  
   const readyList = document.querySelector(".task-list__ready");
   const inProgressList = document.querySelector(".task-list__in-progress");
   const finishedList = document.querySelector(".task-list__finished");

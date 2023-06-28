@@ -217,7 +217,7 @@ function loadMainPage() {
       updateAllTaskList();
     })
   })
-
+  
   updateAllTaskList();
 }
 

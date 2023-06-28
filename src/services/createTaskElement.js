@@ -3,6 +3,7 @@ import { findOfId, calculateTask } from "../utils"
 import { Task } from "../models/Task";
 import { createTaskModalWindow } from "./createTaskModalWindow"
 import { updateAllListSelect } from "./updateAllListSelect";
+import { dragstartHandler } from "./dragAndDropHandlers";
 
 export function createTaskElement(task) {
   const taskInfo = createTaskModalWindow(task);
@@ -70,5 +71,9 @@ export function createTaskElement(task) {
     e.currentTarget.previousElementSibling.classList.toggle("task-item__content_delete-target")
   })
 
+  taskItem.draggable = true;
+  taskItem.id = task.id;
+  taskItem.ondragstart = dragstartHandler;
+  
   return taskItem
 }

@@ -1,9 +1,9 @@
 <div class="kanban">
   <div class="kanban__content">
     <!-- READY -->
-    <div class="task-content">
+    <div class="task-content" data-state="ready">
       <span class="task-content__title">Ready</span>
-      <ul class="task-list task-list__ready"></ul>
+      <ul class="task-list task-list__ready" data-state="ready"></ul>
       <form class="task-content__form task-content__form_disabled" data-state="ready">
         <input class="task-content__input form-control me-2" data-state="ready" name="Task title" 
           autocomplete="off" type="text" placeholder="Task title" aria-label="Task title">
@@ -20,9 +20,9 @@
       </button>
     </div>
     <!-- IN PROGRESS -->
-    <div class="task-content">
+    <div class="task-content" data-state="in-progress">
       <span class="task-content__title">In Progress</span>
-      <ul class="task-list task-list__in-progress"></ul>
+      <ul class="task-list task-list__in-progress" data-state="in-progress"></ul>
       <form class="task-content__form task-content__form_disabled" data-state="in-progress">
         <select id="task-ready-list-select" class="task-content__task-ready-list-select form-control me-2" data-state="in-progress"></select>
         <button class="task-content__btn-submit" data-state="in-progress">
@@ -37,9 +37,9 @@
       </button>
     </div>
     <!-- FINISHED -->
-    <div class="task-content">
+    <div class="task-content" data-state="finished">
       <span class="task-content__title">Finished</span>
-      <ul class="task-list task-list__finished"></ul>
+      <ul class="task-list task-list__finished" data-state="finished"></ul>
       <form class="task-content__form task-content__form_disabled" data-state="finished">
         <select id="task-in-progress-list-select" class="task-content__task-in-progress-list-select form-control me-2" data-state="finished"></select>
         <button class="task-content__btn-submit" data-state="finished">
