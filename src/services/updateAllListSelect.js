@@ -11,6 +11,10 @@ export function updateAllListSelect() {
   
   const users = getFromStorage("users").filter((item) => !item.hasAdmin)
 
+  clearNode(userListSelect);
+  clearNode(taskReadyListSelect);
+  clearNode(taskInProgressListSelect);
+
   users.forEach((item) => {
     const user = document.createElement("option");
     
@@ -19,9 +23,6 @@ export function updateAllListSelect() {
     
     userListSelect.appendChild(user)
   })
-
-  clearNode(taskReadyListSelect);
-  clearNode(taskInProgressListSelect);
 
   tasks.forEach((item) => {
     if (item.executor_id == appState.currentUser.id || appState.currentUser.hasAdmin) {
